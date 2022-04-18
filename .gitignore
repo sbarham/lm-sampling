@@ -1,0 +1,8 @@
+# Large files
+img/
+
+# Compiled files
+__pycache__/
+
+# Temp files
+*~

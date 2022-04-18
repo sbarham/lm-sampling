@@ -1,0 +1,30 @@
+- how many words are in the nucleus (with p=0.5, 0.7, 0.9)?
+- how often is the true next word in the nucleus (with p=0.5, 0.7, 0.9)?
+- how to characterize exponential graphs? To describe/quantify when they flatten out?
+
+- use numpy to fit exponential curve (polynomial of log):
+
+log_x = np.log(x)
+log_y = np.log(y)
+
+coefficients = np.polyfit(log_x, y, 1)
+print(coefficients)
+
+Note: why exponential fit coefficients? b/c ranked softmax almost always resembles geometric; why mean-squared-error as feature? b/c sometimes the head has a plateau -- these coefficients can capture that fact
+- these two features seem to be the determining features of the distributions shape (aside from the question of *where* the plateau is -- perhaps there's a way to capture this, too?)
+- anyway, two features: mostly geometric/exponential, but sometimes with a pronounced plateau -- these seem essential to capture -- other than these, the ranked softmax dist is redundant -- so a three number summary seems sufficient
+
+but what to predict? perhaps predict: how big nucleus should be to incorporate the target (maybe take synonyms into account as well, though? perhaps if network predicts a close synonym this is sufficient? so we might search for synonyms as well?) with some mass to spare on the right
+OR
+which order of magnitude n (given some base b) we need (b^n) to grab for sampling in order to include the target
+AND/OR
+some temperature (for rescaling) that depends on how far out the target is
+
+- (features) write function to calculate these coeff + mean-squared-error of dist with this exp for any output dict
+- (features) also optionally include last hidden state
+- (target 1) write function to calculate which base 5 order of magnitude the true index is in
+- (target 2) write function to calculate how big the nucleus has to be to include the true index in the head with f percent of mass to spare on the right
+- (target 3) write function to calculate the best softmax temperature to scale the distribution by (to dynmically recalibrate, essentially)
+  - read paper on calibration?
+  - because vvv
+- consideration: if true index is very close to the tail and has very little probability mass, we'll want to rescale the distribution using an appropriate temperature; the closer the true index is the tail, the more uniform we want the distribution to be <-- very simply, and heuristically
